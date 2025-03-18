@@ -37,9 +37,11 @@ private:
 
 HAWP::HAWP()
 {
-	string model_path = "hawp_512x512_float32.onnx";
+	string model_path = "hawp_512x512_float32.onnx"; // ONNX模型,CPU和CUDA均可使用
+	// string model_path = "hawp_512x512_float32_inferred.onnx"; // TensorRT推理时，需要使用inferred模型
 	// std::wstring widestr = std::wstring(model_path.begin(), model_path.end());  ////windows写法
-	OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, 0);   ///如果使用cuda加速，需要取消注释
+	// OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, 0);   // 如果使用cuda加速，需要取消注释
+	// OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_Tensorrt(sessionOptions, 0);   // 如果使用tensorrt加速，需要取消注释
 
 	sessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_BASIC);
 	// ort_session = new Session(env, widestr.c_str(), sessionOptions); ////windows写法
