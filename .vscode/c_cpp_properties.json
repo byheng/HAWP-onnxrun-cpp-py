@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/include",
+                "/usr/local/include",
+                "${env:ONNXRUNTIME_DIR}/include"  // set ONNXRUNTIME_DIR to the path of the ONNX Runtime source code,ONNXRUNTIME_DIR is the environment variable set in ~/.bashrc
+            ],
+            "defines": [],
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -4,7 +4,7 @@
 #include <string>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-//#include <cuda_provider_factory.h>  ///Èç¹ûÊ¹ÓÃcuda¼ÓËÙ£¬ĞèÒªÈ¡Ïû×¢ÊÍ
+// #include <cuda_provider_factory.h>  ///å¦‚æœä½¿ç”¨cudaåŠ é€Ÿï¼Œéœ€è¦å–æ¶ˆæ³¨é‡Š
 #include <onnxruntime_cxx_api.h>
 
 using namespace cv;
@@ -38,19 +38,19 @@ private:
 HAWP::HAWP()
 {
 	string model_path = "hawp_512x512_float32.onnx";
-	std::wstring widestr = std::wstring(model_path.begin(), model_path.end());  ////windowsĞ´·¨
-	///OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, 0);   ///Èç¹ûÊ¹ÓÃcuda¼ÓËÙ£¬ĞèÒªÈ¡Ïû×¢ÊÍ
+	// std::wstring widestr = std::wstring(model_path.begin(), model_path.end());  ////windowså†™æ³•
+	// OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, 0);   ///å¦‚æœä½¿ç”¨cudaåŠ é€Ÿï¼Œéœ€è¦å–æ¶ˆæ³¨é‡Š
 
 	sessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_BASIC);
-	ort_session = new Session(env, widestr.c_str(), sessionOptions); ////windowsĞ´·¨
-	////ort_session = new Session(env, model_path.c_str(), sessionOptions); ////linuxĞ´·¨
+	// ort_session = new Session(env, widestr.c_str(), sessionOptions); ////windowså†™æ³•
+	ort_session = new Session(env, model_path.c_str(), sessionOptions); ////linuxå†™æ³•
 
 	size_t numInputNodes = ort_session->GetInputCount();
 	size_t numOutputNodes = ort_session->GetOutputCount();
 	AllocatorWithDefaultOptions allocator;
 	for (int i = 0; i < numInputNodes; i++)
 	{
-		input_names.push_back(ort_session->GetInputName(i, allocator));
+		input_names.push_back(ort_session->GetInputNameAllocated(i, allocator).release());
 		Ort::TypeInfo input_type_info = ort_session->GetInputTypeInfo(i);
 		auto input_tensor_info = input_type_info.GetTensorTypeAndShapeInfo();
 		auto input_dims = input_tensor_info.GetShape();
@@ -58,7 +58,7 @@ HAWP::HAWP()
 	}
 	for (int i = 0; i < numOutputNodes; i++)
 	{
-		output_names.push_back(ort_session->GetOutputName(i, allocator));
+		output_names.push_back(ort_session->GetOutputNameAllocated(i, allocator).release());
 		Ort::TypeInfo output_type_info = ort_session->GetOutputTypeInfo(i);
 		auto output_tensor_info = output_type_info.GetTensorTypeAndShapeInfo();
 		auto output_dims = output_tensor_info.GetShape();
@@ -96,7 +96,7 @@ Mat HAWP::detect(Mat srcimg)
 
 	auto allocator_info = MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 	Value input_tensor_ = Value::CreateTensor<float>(allocator_info, input_image_.data(), input_image_.size(), input_shape_.data(), input_shape_.size());
-	vector<Value> ort_outputs = ort_session->Run(RunOptions{ nullptr }, input_names.data(), &input_tensor_, 1, output_names.data(), output_names.size());   // ¿ªÊ¼ÍÆÀí
+	vector<Value> ort_outputs = ort_session->Run(RunOptions{ nullptr }, input_names.data(), &input_tensor_, 1, output_names.data(), output_names.size());   // å¼€å§‹æ¨ç†
 	// post process.																																					
 	const int num_lines = this->output_node_dims[0][0];
 	float *lines = ort_outputs[0].GetTensorMutableData<float>();
