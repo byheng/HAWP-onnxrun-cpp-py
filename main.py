@@ -10,7 +10,9 @@ class HAWP:
     def __init__(self, conf_thres=0.95):
         self.conf_threshold = conf_thres
         # Initialize model
-        self.onnx_session = onnxruntime.InferenceSession("hawp_512x512_float32.onnx")
+        providers = ['CUDAExecutionProvider']
+        # providers = ['CPUExecutionProvider']
+        self.onnx_session = onnxruntime.InferenceSession("hawp_512x512_float32.onnx", providers=providers)
         self.input_name = self.onnx_session.get_inputs()[0].name
         self.output_name = self.onnx_session.get_outputs()[0].name
 

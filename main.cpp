@@ -4,7 +4,7 @@
 #include <string>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
-// #include <cuda_provider_factory.h>  ///如果使用cuda加速，需要取消注释
+// #include <onnxruntime/core/providers/cuda/cuda_provider_factory.h>  ///如果使用cuda加速，需要取消注释
 #include <onnxruntime_cxx_api.h>
 
 using namespace cv;
@@ -39,7 +39,7 @@ HAWP::HAWP()
 {
 	string model_path = "hawp_512x512_float32.onnx";
 	// std::wstring widestr = std::wstring(model_path.begin(), model_path.end());  ////windows写法
-	// OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, 0);   ///如果使用cuda加速，需要取消注释
+	OrtStatus* status = OrtSessionOptionsAppendExecutionProvider_CUDA(sessionOptions, 0);   ///如果使用cuda加速，需要取消注释
 
 	sessionOptions.SetGraphOptimizationLevel(ORT_ENABLE_BASIC);
 	// ort_session = new Session(env, widestr.c_str(), sessionOptions); ////windows写法
